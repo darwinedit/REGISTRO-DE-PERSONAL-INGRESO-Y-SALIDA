@@ -32,6 +32,8 @@ input,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:
 label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
 button{font:inherit;cursor:pointer;color:var(--tx)}
 .go{width:100%;margin-top:10px;padding:16px;font-size:17px;font-weight:700;border:0;border-radius:10px;background:var(--ok);color:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gs{background:var(--dn)}
 .small{padding:6px 11px;border:1px solid var(--bd);border-radius:8px;background:var(--card);font-size:13px}
 .out{background:var(--dn);color:#fff;border:0;font-weight:700;padding:9px 14px;border-radius:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -85,9 +87,10 @@ th{color:var(--mut);font-size:12px}
   <div class="row">
    <div><label for="nombre">Nombre *</label><input id="nombre" autocomplete="off" enterkeyhint="next"></div>
    <div><label for="doc">DNI / Documento</label><input id="doc" autocomplete="off" enterkeyhint="next"></div>
-   <div><label for="emp" id="lemp">Empresa</label><input id="emp" autocomplete="off" enterkeyhint="done"></div>
+   <div id="wemp"><label for="emp" id="lemp">Empresa</label><input id="emp" autocomplete="off" enterkeyhint="next"></div>
+   <div id="wdep"><label for="dep">Departamento</label><input id="dep" autocomplete="off" enterkeyhint="done"></div>
   </div>
-  <button class="go" id="add">REGISTRAR ENTRADA AHORA</button>
+  <div class="two"><button class="go" id="add">INGRESO</button><button class="go gs" id="sal">SALIDA</button></div>
  </div>
 
  <div class="card np" id="recWrap">
@@ -118,7 +121,7 @@ th{color:var(--mut);font-size:12px}
   </div>
   <div class="tw">
    <table>
-    <thead><tr><th>#</th><th>Tipo</th><th>Nombre</th><th>DNI / Documento</th><th>Empresa / Apto / Familia</th><th>Fecha</th><th>Entrada</th><th>Salida</th><th class="act"></th></tr></thead>
+    <thead><tr><th>#</th><th>Tipo</th><th>Nombre</th><th>DNI / Documento</th><th>Empresa / Apto</th><th>Departamento</th><th>Fecha</th><th>Entrada</th><th>Salida</th><th class="act"></th></tr></thead>
     <tbody id="tb"></tbody>
    </table>
   </div>
@@ -147,22 +150,39 @@ th{color:var(--mut);font-size:12px}
   $("dt").textContent=d.toLocaleDateString("es",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
 
  function setTipo(t){tipo=t;Array.prototype.forEach.call($("types").children,function(b){b.className=b.getAttribute("data-t")===t?"on":""});
-  $("lemp").textContent=t==="Nana"?"Familia / Apto":t==="Propietario"?"Apto / Casa":"Empresa";save(DKEY,{tipo:t})}
+  $("lemp").textContent=t==="Propietario"?"Apto / Casa":"Empresa";$("wemp").style.display=t==="Nana"?"none":"";$("wdep").style.display=t==="Propietario"?"none":"";save(DKEY,{tipo:t})}
 
  function dentro(){return data.filter(function(r){return!r.hs})}
- function registrar(t,n,e,dc){
+ function registrar(t,n,e,dc,dp){
   var ya=dentro().filter(function(r){return r.nombre.toLowerCase()===n.toLowerCase()&&r.tipo===t})[0];
   if(ya&&!confirm(n+" ya aparece dentro desde las "+fmtH(ya.he)+". ¿Registrar otra entrada?"))return false;
-  data.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:t,nombre:n,doc:dc||"",emp:e||"",fecha:hoy(),he:hora(),hs:""});
+  data.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:t,nombre:n,doc:dc||"",emp:e||"",dep:dp||"",fecha:hoy(),he:hora(),hs:""});
   save(KEY,data);return true;
  }
 
  $("add").onclick=function(){
   var n=$("nombre").value.trim();
   if(!n){toast("Escribe el nombre");$("nombre").focus();return}
-  if(registrar(tipo,n,$("emp").value.trim(),$("doc").value.trim())){toast("Entrada registrada: "+n+" · "+fmtH(hora()));$("nombre").value="";$("doc").value="";$("emp").value="";render();$("nombre").focus()}
+  if(registrar(tipo,n,vemp(),$("doc").value.trim(),vdep())){toast("Ingreso registrado: "+n+" · "+fmtH(hora()));limpiar();render();$("nombre").focus()}
  };
- [$("nombre"),$("doc"),$("emp")].forEach(function(el){el.addEventListener("keydown",function(e){if(e.key==="Enter")$("add").click()})});
+ function vemp(){return $("wemp").style.display==="none"?"":$("emp").value.trim()}
+ function vdep(){return $("wdep").style.display==="none"?"":$("dep").value.trim()}
+ function limpiar(){["nombre","doc","emp","dep"].forEach(function(k){$(k).value=""})}
+ $("sal").onclick=function(){
+  var n=$("nombre").value.trim(),dc=$("doc").value.trim();
+  if(!n&&!dc){toast("Escribe el nombre o el documento");$("nombre").focus();return}
+  var d=dentro().filter(function(r){return(dc&&r.doc===dc)||(n&&r.nombre.toLowerCase()===n.toLowerCase())});
+  var r=d[d.length-1];
+  if(r){r.hs=hora();save(KEY,data);toast("Salida registrada: "+r.nombre+" · "+fmtH(r.hs))}
+  else{
+   if(!n){toast("No hay nadie dentro con ese documento");return}
+   if(!confirm(n+" no aparece dentro. ¿Registrar solo la salida?"))return;
+   data.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:tipo,nombre:n,doc:dc,emp:vemp(),dep:vdep(),fecha:hoy(),he:"",hs:hora()});
+   save(KEY,data);toast("Salida registrada: "+n+" · "+fmtH(hora()));
+  }
+  limpiar();render();$("nombre").focus();
+ };
+ [$("nombre"),$("doc"),$("emp"),$("dep")].forEach(function(el){el.addEventListener("keydown",function(e){if(e.key==="Enter")$("add").click()})});
  $("types").onclick=function(e){var t=e.target.getAttribute("data-t");if(t)setTipo(t)};
 
  $("dentro").onclick=function(e){
@@ -173,7 +193,7 @@ th{color:var(--mut);font-size:12px}
  $("rec").onclick=function(e){
   var i=e.target.getAttribute("data-r");if(i==null)return;
   var r=recientes()[+i];if(!r)return;
-  if(registrar(r.tipo,r.nombre,r.emp,r.doc)){toast("Entrada registrada: "+r.nombre+" · "+fmtH(hora()));render()}
+  if(registrar(r.tipo,r.nombre,r.emp,r.doc,r.dep)){toast("Ingreso registrado: "+r.nombre+" · "+fmtH(hora()));render()}
  };
  $("tb").onclick=function(e){
   var id=e.target.getAttribute("data-del");
@@ -206,7 +226,7 @@ th{color:var(--mut);font-size:12px}
   var d=dentro(),h="";
   $("nin").textContent=d.length;
   d.forEach(function(r){
-   h+="<div class='in'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(r.tipo)+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+"</small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
+   h+="<div class='in'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(r.tipo)+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+(r.dep?"Depto. "+esc(r.dep)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+"</small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
   });
   $("dentro").innerHTML=h||"<div class='empty'>Nadie dentro en este momento</div>";
 
@@ -216,9 +236,9 @@ th{color:var(--mut);font-size:12px}
 
   var rows=filtrados(),t="";
   rows.forEach(function(r,i){
-   t+="<tr><td>"+(i+1)+"</td><td>"+esc(r.tipo)+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+fmtH(r.he)+"</td><td>"+(r.hs?fmtH(r.hs):"—")+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
+   t+="<tr><td>"+(i+1)+"</td><td>"+esc(r.tipo)+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+esc(r.dep)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+(r.he?fmtH(r.he):"—")+"</td><td>"+(r.hs?fmtH(r.hs):"—")+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
   });
-  $("tb").innerHTML=t||"<tr><td colspan='9' class='empty'>Sin registros</td></tr>";
+  $("tb").innerHTML=t||"<tr><td colspan='10' class='empty'>Sin registros</td></tr>";
   $("pinfo").textContent="Tipo: "+ft+" · Fecha: "+(fd?fmtF(fd):"todas")+" · Total: "+rows.length+" · Impreso: "+new Date().toLocaleString("es");
  }
 
