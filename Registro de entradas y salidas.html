@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Registro de entradas y salidas</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#667085;--bd:#d9dde5;--ac:#2f6fed;--ac2:#fff;--ok:#1a8f5a;--dn:#d23b3b;
+--c1:#e8f0ff;--c2:#e6f6ee;--c3:#fdeef5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a}}
+:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
+h1{font-size:19px;margin:0}
+.clock{text-align:right;font-variant-numeric:tabular-nums}
+.clock b{font-size:22px;display:block;line-height:1.1}
+.clock span{font-size:12px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+h2{font-size:14px;margin:0 0 10px;color:var(--mut);font-weight:600}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.types button{padding:14px 6px;font-size:15px;font-weight:600;border:2px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);cursor:pointer}
+.types button[data-t="Proveedor"].on{background:var(--c1);border-color:var(--ac)}
+.types button[data-t="Propietario"].on{background:var(--c2);border-color:var(--ok)}
+.types button[data-t="Nana"].on{background:var(--c3);border-color:#d6479b}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+input,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;font-size:16px}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+button{font:inherit;cursor:pointer;color:var(--tx)}
+.go{width:100%;margin-top:10px;padding:16px;font-size:17px;font-weight:700;border:0;border-radius:10px;background:var(--ok);color:#fff}
+.small{padding:6px 11px;border:1px solid var(--bd);border-radius:8px;background:var(--card);font-size:13px}
+.out{background:var(--dn);color:#fff;border:0;font-weight:700;padding:9px 14px;border-radius:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 11px;border:1px dashed var(--bd);border-radius:99px;background:var(--bg);font-size:13px}
+.in{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.in:last-child{border-bottom:0}
+.in small{color:var(--mut);display:block}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;border:1px solid var(--bd)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.bar .sp{flex:1}
+.bar input{width:auto;padding:7px 9px;font-size:14px}
+.f.on{background:var(--ac);color:var(--ac2);border-color:var(--ac)}
+.pdf{background:var(--ac);color:var(--ac2);border:0;font-weight:700;padding:9px 14px;border-radius:8px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+th,td{border-bottom:1px solid var(--bd);padding:7px 6px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-size:12px}
+.empty{text-align:center;color:var(--mut);padding:18px}
+.msg{font-size:12px;color:var(--ok)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1d2330;color:#fff;padding:11px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
+.toast.s{opacity:1}
+.ph{display:none}
+@media print{
+ @page{size:A4 landscape;margin:12mm}
+ body{background:#fff;color:#000}
+ .wrap{max-width:none;padding:0}
+ .np,.act,.toast{display:none!important}
+ .ph{display:block;margin-bottom:8px}
+ .card{border:0;padding:0}
+ .tw{overflow:visible}
+ table{min-width:0;font-size:11px}
+ th,td{border:1px solid #999;color:#000}
+ tr{page-break-inside:avoid}
+ thead{display:table-header-group}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="top np">
+  <div><h1>Entradas y salidas</h1><span class="msg" id="st">Autoguardado activo</span></div>
+  <div class="clock"><b id="ck">--:--</b><span id="dt"></span></div>
+ </div>
+
+ <div class="card np">
+  <div class="types" id="types">
+   <button data-t="Proveedor" class="on">Proveedor</button>
+   <button data-t="Propietario">Propietario</button>
+   <button data-t="Nana">Nana</button>
+  </div>
+  <div class="row">
+   <div><label for="nombre">Nombre *</label><input id="nombre" autocomplete="off" enterkeyhint="next"></div>
+   <div><label for="doc">DNI / Documento</label><input id="doc" autocomplete="off" enterkeyhint="next"></div>
+   <div><label for="emp" id="lemp">Empresa</label><input id="emp" autocomplete="off" enterkeyhint="done"></div>
+  </div>
+  <button class="go" id="add">REGISTRAR ENTRADA AHORA</button>
+ </div>
+
+ <div class="card np" id="recWrap">
+  <h2>Toque rápido: registrar entrada de uno reciente</h2>
+  <div class="chips" id="rec"></div>
+ </div>
+
+ <div class="card np">
+  <h2>Dentro ahora (<span id="nin">0</span>)</h2>
+  <div id="dentro"></div>
+ </div>
+
+ <div class="card">
+  <div class="ph"><h1>Registro de entradas y salidas</h1><div id="pinfo"></div></div>
+  <div class="bar np">
+   <button class="small f on" data-f="Todos">Todos</button>
+   <button class="small f" data-f="Proveedor">Proveedores</button>
+   <button class="small f" data-f="Propietario">Propietarios</button>
+   <button class="small f" data-f="Nana">Nanas</button>
+  </div>
+  <div class="bar np">
+   <button class="small" id="hoy">Hoy</button>
+   <input type="date" id="fd" aria-label="Fecha">
+   <button class="small" id="todas">Todas las fechas</button>
+   <span class="sp"></span>
+   <button class="pdf" id="pdf">Exportar PDF</button>
+   <button class="small" id="all" style="color:var(--dn)">Borrar todo</button>
+  </div>
+  <div class="tw">
+   <table>
+    <thead><tr><th>#</th><th>Tipo</th><th>Nombre</th><th>DNI / Documento</th><th>Empresa / Apto / Familia</th><th>Fecha</th><th>Entrada</th><th>Salida</th><th class="act"></th></tr></thead>
+    <tbody id="tb"></tbody>
+   </table>
+  </div>
+ </div>
+</div>
+<div class="toast" id="ts"></div>
+
+<script>
+(function(){
+ var KEY="registro_ingresos_v1",DKEY="registro_borrador_v2";
+ var $=function(i){return document.getElementById(i)};
+ var data=[],tipo="Proveedor",ft="Todos",fd="";
+ var tt;
+
+ function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+ function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));var s=$("st");s.style.color="";s.textContent="Guardado automáticamente "+fmtH(hora());return true}catch(e){var s2=$("st");s2.style.color="var(--dn)";s2.textContent="No se pudo autoguardar: exporta el PDF";return false}}
+ function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+ function p2(n){return("0"+n).slice(-2)}
+ function hoy(){var d=new Date();return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())}
+ function hora(){var d=new Date();return p2(d.getHours())+":"+p2(d.getMinutes())}
+ function fmtH(h){if(!h)return"";var a=h.split(":"),H=+a[0],s=H>=12?"p. m.":"a. m.";H=H%12||12;return H+":"+a[1]+" "+s}
+ function fmtF(f){if(!f)return"";var p=f.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+ function toast(m){var t=$("ts");t.textContent=m;t.className="toast s";clearTimeout(tt);tt=setTimeout(function(){t.className="toast"},2200)}
+
+ function clock(){var d=new Date();$("ck").textContent=p2(d.getHours()>12?d.getHours()-12:(d.getHours()||12))+":"+p2(d.getMinutes())+":"+p2(d.getSeconds())+" "+(d.getHours()>=12?"p. m.":"a. m.");
+  $("dt").textContent=d.toLocaleDateString("es",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+
+ function setTipo(t){tipo=t;Array.prototype.forEach.call($("types").children,function(b){b.className=b.getAttribute("data-t")===t?"on":""});
+  $("lemp").textContent=t==="Nana"?"Familia / Apto":t==="Propietario"?"Apto / Casa":"Empresa";save(DKEY,{tipo:t})}
+
+ function dentro(){return data.filter(function(r){return!r.hs})}
+ function registrar(t,n,e,dc){
+  var ya=dentro().filter(function(r){return r.nombre.toLowerCase()===n.toLowerCase()&&r.tipo===t})[0];
+  if(ya&&!confirm(n+" ya aparece dentro desde las "+fmtH(ya.he)+". ¿Registrar otra entrada?"))return false;
+  data.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),tipo:t,nombre:n,doc:dc||"",emp:e||"",fecha:hoy(),he:hora(),hs:""});
+  save(KEY,data);return true;
+ }
+
+ $("add").onclick=function(){
+  var n=$("nombre").value.trim();
+  if(!n){toast("Escribe el nombre");$("nombre").focus();return}
+  if(registrar(tipo,n,$("emp").value.trim(),$("doc").value.trim())){toast("Entrada registrada: "+n+" · "+fmtH(hora()));$("nombre").value="";$("doc").value="";$("emp").value="";render();$("nombre").focus()}
+ };
+ [$("nombre"),$("doc"),$("emp")].forEach(function(el){el.addEventListener("keydown",function(e){if(e.key==="Enter")$("add").click()})});
+ $("types").onclick=function(e){var t=e.target.getAttribute("data-t");if(t)setTipo(t)};
+
+ $("dentro").onclick=function(e){
+  var id=e.target.getAttribute("data-out");if(!id)return;
+  data.forEach(function(r){if(r.id===id){r.hs=hora();toast("Salida registrada: "+r.nombre+" · "+fmtH(r.hs))}});
+  save(KEY,data);render();
+ };
+ $("rec").onclick=function(e){
+  var i=e.target.getAttribute("data-r");if(i==null)return;
+  var r=recientes()[+i];if(!r)return;
+  if(registrar(r.tipo,r.nombre,r.emp,r.doc)){toast("Entrada registrada: "+r.nombre+" · "+fmtH(hora()));render()}
+ };
+ $("tb").onclick=function(e){
+  var id=e.target.getAttribute("data-del");
+  if(id&&confirm("¿Eliminar este registro?")){data=data.filter(function(r){return r.id!==id});save(KEY,data);render()}
+ };
+
+ document.querySelector(".bar").onclick=function(e){var f=e.target.getAttribute("data-f");if(!f)return;ft=f;
+  Array.prototype.forEach.call(document.querySelectorAll(".f"),function(b){b.className="small f"+(b.getAttribute("data-f")===f?" on":"")});render()};
+ $("hoy").onclick=function(){fd=hoy();$("fd").value=fd;render()};
+ $("todas").onclick=function(){fd="";$("fd").value="";render()};
+ $("fd").onchange=function(){fd=this.value;render()};
+ $("all").onclick=function(){if(data.length&&confirm("¿Borrar TODOS los registros? No se puede deshacer.")){data=[];save(KEY,data);render()}};
+ $("pdf").onclick=function(){
+  var n=filtrados().length;
+  if(!n){toast("No hay registros para exportar con este filtro");return}
+  render();alert("En la ventana siguiente elige «Guardar como PDF» como destino.");window.print();
+ };
+ window.addEventListener("beforeprint",render);
+
+ function filtrados(){return data.filter(function(r){return(ft==="Todos"||r.tipo===ft)&&(!fd||r.fecha===fd)})}
+ function recientes(){
+  var seen={},out=[],ins={};
+  dentro().forEach(function(r){ins[r.tipo+"|"+r.nombre.toLowerCase()]=1});
+  for(var i=data.length-1;i>=0&&out.length<8;i--){var r=data[i],k=r.tipo+"|"+r.nombre.toLowerCase();
+   if(!seen[k]&&!ins[k]){seen[k]=1;out.push(r)}}
+  return out;
+ }
+
+ function render(){
+  var d=dentro(),h="";
+  $("nin").textContent=d.length;
+  d.forEach(function(r){
+   h+="<div class='in'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(r.tipo)+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+"</small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
+  });
+  $("dentro").innerHTML=h||"<div class='empty'>Nadie dentro en este momento</div>";
+
+  var rc=recientes(),c="";
+  rc.forEach(function(r,i){c+="<button class='chip' data-r='"+i+"'>"+esc(r.nombre)+" · "+esc(r.tipo)+"</button>"});
+  $("rec").innerHTML=c;$("recWrap").style.display=rc.length?"":"none";
+
+  var rows=filtrados(),t="";
+  rows.forEach(function(r,i){
+   t+="<tr><td>"+(i+1)+"</td><td>"+esc(r.tipo)+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+fmtH(r.he)+"</td><td>"+(r.hs?fmtH(r.hs):"—")+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
+  });
+  $("tb").innerHTML=t||"<tr><td colspan='9' class='empty'>Sin registros</td></tr>";
+  $("pinfo").textContent="Tipo: "+ft+" · Fecha: "+(fd?fmtF(fd):"todas")+" · Total: "+rows.length+" · Impreso: "+new Date().toLocaleString("es");
+ }
+
+ data=load(KEY,[]);
+ var b=load(DKEY,null);
+ setTipo(b&&b.tipo?b.tipo:"Proveedor");
+ fd=hoy();$("fd").value=fd;
+ clock();setInterval(clock,1000);
+ render();
+})();
+</script>
+</body>
+</html>
