@@ -6,10 +6,10 @@
 <title>Registro de entradas y salidas</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#667085;--bd:#d9dde5;--ac:#2f6fed;--ac2:#fff;--ok:#1a8f5a;--dn:#d23b3b;
---c1:#e8f0ff;--c2:#e6f6ee;--c3:#fdeef5;
+--c1:#e8f0ff;--c2:#e6f6ee;--c3:#fdeef5;--r1:#d4e6ff;--r2:#d2f0de;--r3:#fbdbe9;--b1:#2f8fe0;--b2:#1a8f5a;--b3:#d6479b;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a}}
-:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a;--r1:#223a63;--r2:#1d4a36;--r3:#59304a;--b1:#5aa9f0;--b2:#4cc38a;--b3:#ff8fc6}}
+:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a;--r1:#223a63;--r2:#1d4a36;--r3:#59304a;--b1:#5aa9f0;--b2:#4cc38a;--b3:#ff8fc6}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -51,6 +51,10 @@ button{font:inherit;cursor:pointer;color:var(--tx)}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
 th,td{border-bottom:1px solid var(--bd);padding:7px 6px;text-align:left;vertical-align:top}
 th{color:var(--mut);font-size:12px}
+tr.t-Proveedor td{background:var(--r1)}tr.t-Propietario td{background:var(--r2)}tr.t-Nana td{background:var(--r3)}
+tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario td:first-child{border-left:5px solid var(--b2)}tr.t-Nana td:first-child{border-left:5px solid var(--b3)}
+.in.t-Proveedor{background:var(--r1);border-left:5px solid var(--b1)}.in.t-Propietario{background:var(--r2);border-left:5px solid var(--b2)}.in.t-Nana{background:var(--r3);border-left:5px solid var(--b3)}
+.in.t-Proveedor,.in.t-Propietario,.in.t-Nana{padding:9px 10px;border-radius:8px;margin-bottom:6px;border-bottom:0}
 .empty{text-align:center;color:var(--mut);padding:18px}
 .msg{font-size:12px;color:var(--ok)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1d2330;color:#fff;padding:11px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
@@ -66,6 +70,8 @@ th{color:var(--mut);font-size:12px}
  .tw{overflow:visible}
  table{min-width:0;font-size:11px}
  th,td{border:1px solid #999;color:#000}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ tr.t-Proveedor td{background:#d4e6ff!important}tr.t-Propietario td{background:#d2f0de!important}tr.t-Nana td{background:#fbdbe9!important}
  tr{page-break-inside:avoid}
  thead{display:table-header-group}
 }
@@ -91,11 +97,6 @@ th{color:var(--mut);font-size:12px}
    <div id="wdep"><label for="dep">Departamento</label><input id="dep" autocomplete="off" enterkeyhint="done"></div>
   </div>
   <div class="two"><button class="go" id="add">INGRESO</button><button class="go gs" id="sal">SALIDA</button></div>
- </div>
-
- <div class="card np" id="recWrap">
-  <h2>Toque rápido: registrar entrada de uno reciente</h2>
-  <div class="chips" id="rec"></div>
  </div>
 
  <div class="card np">
@@ -152,7 +153,7 @@ th{color:var(--mut);font-size:12px}
  function setTipo(t){tipo=t;Array.prototype.forEach.call($("types").children,function(b){b.className=b.getAttribute("data-t")===t?"on":""});
   $("lemp").textContent=t==="Propietario"?"Apto / Casa":"Empresa";$("wemp").style.display=t==="Nana"?"none":"";$("wdep").style.display=t==="Propietario"?"none":"";save(DKEY,{tipo:t})}
 
- function dentro(){return data.filter(function(r){return!r.hs})}
+ function dentro(){return data.filter(function(r){return!r.hs&&r.tipo!=="Propietario"})}
  function registrar(t,n,e,dc,dp){
   var ya=dentro().filter(function(r){return r.nombre.toLowerCase()===n.toLowerCase()&&r.tipo===t})[0];
   if(ya&&!confirm(n+" ya aparece dentro desde las "+fmtH(ya.he)+". ¿Registrar otra entrada?"))return false;
@@ -163,7 +164,7 @@ th{color:var(--mut);font-size:12px}
  $("add").onclick=function(){
   var n=$("nombre").value.trim();
   if(!n){toast("Escribe el nombre");$("nombre").focus();return}
-  if(registrar(tipo,n,vemp(),$("doc").value.trim(),vdep())){toast("Ingreso registrado: "+n+" · "+fmtH(hora()));limpiar();render();$("nombre").focus()}
+  if(registrar(tipo,n,vemp(),$("doc").value.trim(),vdep())){toast("Ingreso registrado: "+n+" · "+fmtH(hora())+(tipo==="Propietario"?" (propietario, sin salida)":""));limpiar();render();$("nombre").focus()}
  };
  function vemp(){return $("wemp").style.display==="none"?"":$("emp").value.trim()}
  function vdep(){return $("wdep").style.display==="none"?"":$("dep").value.trim()}
@@ -190,11 +191,6 @@ th{color:var(--mut);font-size:12px}
   data.forEach(function(r){if(r.id===id){r.hs=hora();toast("Salida registrada: "+r.nombre+" · "+fmtH(r.hs))}});
   save(KEY,data);render();
  };
- $("rec").onclick=function(e){
-  var i=e.target.getAttribute("data-r");if(i==null)return;
-  var r=recientes()[+i];if(!r)return;
-  if(registrar(r.tipo,r.nombre,r.emp,r.doc,r.dep)){toast("Ingreso registrado: "+r.nombre+" · "+fmtH(hora()));render()}
- };
  $("tb").onclick=function(e){
   var id=e.target.getAttribute("data-del");
   if(id&&confirm("¿Eliminar este registro?")){data=data.filter(function(r){return r.id!==id});save(KEY,data);render()}
@@ -214,29 +210,18 @@ th{color:var(--mut);font-size:12px}
  window.addEventListener("beforeprint",render);
 
  function filtrados(){return data.filter(function(r){return(ft==="Todos"||r.tipo===ft)&&(!fd||r.fecha===fd)})}
- function recientes(){
-  var seen={},out=[],ins={};
-  dentro().forEach(function(r){ins[r.tipo+"|"+r.nombre.toLowerCase()]=1});
-  for(var i=data.length-1;i>=0&&out.length<8;i--){var r=data[i],k=r.tipo+"|"+r.nombre.toLowerCase();
-   if(!seen[k]&&!ins[k]){seen[k]=1;out.push(r)}}
-  return out;
- }
 
  function render(){
   var d=dentro(),h="";
   $("nin").textContent=d.length;
   d.forEach(function(r){
-   h+="<div class='in'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(r.tipo)+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+(r.dep?"Depto. "+esc(r.dep)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+"</small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
+   h+="<div class='in t-"+esc(r.tipo)+"'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(r.tipo)+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+(r.dep?"Depto. "+esc(r.dep)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+"</small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
   });
   $("dentro").innerHTML=h||"<div class='empty'>Nadie dentro en este momento</div>";
 
-  var rc=recientes(),c="";
-  rc.forEach(function(r,i){c+="<button class='chip' data-r='"+i+"'>"+esc(r.nombre)+" · "+esc(r.tipo)+"</button>"});
-  $("rec").innerHTML=c;$("recWrap").style.display=rc.length?"":"none";
-
   var rows=filtrados(),t="";
   rows.forEach(function(r,i){
-   t+="<tr><td>"+(i+1)+"</td><td>"+esc(r.tipo)+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+esc(r.dep)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+(r.he?fmtH(r.he):"—")+"</td><td>"+(r.hs?fmtH(r.hs):"—")+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
+   t+="<tr class='t-"+esc(r.tipo)+"'><td>"+(i+1)+"</td><td>"+esc(r.tipo)+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+esc(r.dep)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+(r.he?fmtH(r.he):"—")+"</td><td>"+(r.hs?fmtH(r.hs):(r.tipo==="Propietario"?"No aplica":"—"))+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
   });
   $("tb").innerHTML=t||"<tr><td colspan='10' class='empty'>Sin registros</td></tr>";
   $("pinfo").textContent="Tipo: "+ft+" · Fecha: "+(fd?fmtF(fd):"todas")+" · Total: "+rows.length+" · Impreso: "+new Date().toLocaleString("es");
