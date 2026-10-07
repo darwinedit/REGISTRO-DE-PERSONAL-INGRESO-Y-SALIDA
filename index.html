@@ -6,10 +6,10 @@
 <title>Registro de entradas y salidas</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#667085;--bd:#d9dde5;--ac:#2f6fed;--ac2:#fff;--ok:#1a8f5a;--dn:#d23b3b;
---c1:#e8f0ff;--c2:#e6f6ee;--c3:#fdeef5;--r1:#d4e6ff;--r2:#d2f0de;--r3:#fbdbe9;--b1:#2f8fe0;--b2:#1a8f5a;--b3:#d6479b;
+--c1:#e8f0ff;--c2:#e6f6ee;--c3:#fdeef5;--r1:#d4e6ff;--r2:#d2f0de;--r3:#fbdbe9;--b1:#2f8fe0;--b2:#1a8f5a;--b3:#d6479b;--c4:#fff3d6;--r4:#fde9b8;--b4:#e0a100;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a;--r1:#223a63;--r2:#1d4a36;--r3:#59304a;--b1:#5aa9f0;--b2:#4cc38a;--b3:#ff8fc6}}
-:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a;--r1:#223a63;--r2:#1d4a36;--r3:#59304a;--b1:#5aa9f0;--b2:#4cc38a;--b3:#ff8fc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a;--r1:#223a63;--r2:#1d4a36;--r3:#59304a;--b1:#5aa9f0;--b2:#4cc38a;--b3:#ff8fc6;--c4:#4a3a14;--r4:#5a4716;--b4:#f0b429}}
+:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa3b2;--bd:#323946;--ac:#6b9bff;--ac2:#10131a;--ok:#4cc38a;--dn:#ff7b7b;--c1:#1f2c47;--c2:#1b3a2d;--c3:#43263a;--r1:#223a63;--r2:#1d4a36;--r3:#59304a;--b1:#5aa9f0;--b2:#4cc38a;--b3:#ff8fc6;--c4:#4a3a14;--r4:#5a4716;--b4:#f0b429}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -21,11 +21,13 @@ h1{font-size:19px;margin:0}
 .clock span{font-size:12px;color:var(--mut)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
 h2{font-size:14px;margin:0 0 10px;color:var(--mut);font-weight:600}
-.types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.types{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+@media(max-width:560px){.types{grid-template-columns:1fr 1fr}}
 .types button{padding:14px 6px;font-size:15px;font-weight:600;border:2px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);cursor:pointer}
 .types button[data-t="Proveedor"].on{background:var(--c1);border-color:var(--ac)}
 .types button[data-t="Propietario"].on{background:var(--c2);border-color:var(--ok)}
 .types button[data-t="Nana"].on{background:var(--c3);border-color:#d6479b}
+.types button[data-t="Trabajador"].on{background:var(--c4);border-color:var(--b4)}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
 @media(max-width:560px){.row{grid-template-columns:1fr}}
 input,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;font-size:16px}
@@ -51,27 +53,35 @@ button{font:inherit;cursor:pointer;color:var(--tx)}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
 th,td{border-bottom:1px solid var(--bd);padding:7px 6px;text-align:left;vertical-align:top}
 th{color:var(--mut);font-size:12px}
-tr.t-Proveedor td{background:var(--r1)}tr.t-Propietario td{background:var(--r2)}tr.t-Nana td{background:var(--r3)}
-tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario td:first-child{border-left:5px solid var(--b2)}tr.t-Nana td:first-child{border-left:5px solid var(--b3)}
-.in.t-Proveedor{background:var(--r1);border-left:5px solid var(--b1)}.in.t-Propietario{background:var(--r2);border-left:5px solid var(--b2)}.in.t-Nana{background:var(--r3);border-left:5px solid var(--b3)}
-.in.t-Proveedor,.in.t-Propietario,.in.t-Nana{padding:9px 10px;border-radius:8px;margin-bottom:6px;border-bottom:0}
+tr.t-Proveedor td{background:var(--r1)}tr.t-Propietario td{background:var(--r2)}tr.t-Nana td{background:var(--r3)}tr.t-Trabajador td{background:var(--r4)}
+tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario td:first-child{border-left:5px solid var(--b2)}tr.t-Nana td:first-child{border-left:5px solid var(--b3)}tr.t-Trabajador td:first-child{border-left:5px solid var(--b4)}
+.in.t-Proveedor{background:var(--r1);border-left:5px solid var(--b1)}.in.t-Propietario{background:var(--r2);border-left:5px solid var(--b2)}.in.t-Nana{background:var(--r3);border-left:5px solid var(--b3)}.in.t-Trabajador{background:var(--r4);border-left:5px solid var(--b4)}
+.in.t-Proveedor,.in.t-Propietario,.in.t-Nana,.in.t-Trabajador{padding:9px 10px;border-radius:8px;margin-bottom:6px;border-bottom:0}
 .empty{text-align:center;color:var(--mut);padding:18px}
 .msg{font-size:12px;color:var(--ok)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1d2330;color:#fff;padding:11px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
 .toast.s{opacity:1}
 .ph{display:none}
+.pen{border:0;background:transparent;color:var(--ac);font-size:15px;line-height:1;padding:4px 7px;border-radius:6px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:9;padding:16px}
+.modal.s{display:flex}
+.mbox{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;width:100%;max-width:340px}
+.mbox h2{color:var(--tx);font-size:15px}
+.mbox input{margin-bottom:10px;font-size:20px;text-align:center}
+.mbox .small{padding:12px}
+.mbox .ok{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700}
 @media print{
  @page{size:A4 landscape;margin:12mm}
  body{background:#fff;color:#000}
  .wrap{max-width:none;padding:0}
- .np,.act,.toast{display:none!important}
+ .np,.act,.toast,.modal{display:none!important}
  .ph{display:block;margin-bottom:8px}
  .card{border:0;padding:0}
  .tw{overflow:visible}
  table{min-width:0;font-size:11px}
  th,td{border:1px solid #999;color:#000}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
- tr.t-Proveedor td{background:#d4e6ff!important}tr.t-Propietario td{background:#d2f0de!important}tr.t-Nana td{background:#fbdbe9!important}
+ tr.t-Proveedor td{background:#d4e6ff!important}tr.t-Propietario td{background:#d2f0de!important}tr.t-Nana td{background:#fbdbe9!important}tr.t-Trabajador td{background:#fde9b8!important}
  tr{page-break-inside:avoid}
  thead{display:table-header-group}
 }
@@ -89,9 +99,10 @@ tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario t
    <button data-t="Proveedor" class="on">Proveedor</button>
    <button data-t="Propietario">Propietario</button>
    <button data-t="Nana">Nana</button>
+   <button data-t="Trabajador">Trabajador/a</button>
   </div>
   <div class="row">
-   <div><label for="nombre">Nombre *</label><input id="nombre" autocomplete="off" enterkeyhint="next"></div>
+   <div><label for="nombre">Nombre *</label><input id="nombre" list="sug" autocomplete="off" enterkeyhint="next"><datalist id="sug"></datalist></div>
    <div><label for="doc">DNI / Documento</label><input id="doc" autocomplete="off" enterkeyhint="next"></div>
    <div id="wemp"><label for="emp" id="lemp">Empresa</label><input id="emp" autocomplete="off" enterkeyhint="next"></div>
    <div id="wdep"><label for="dep">Departamento</label><input id="dep" autocomplete="off" enterkeyhint="done"></div>
@@ -111,6 +122,7 @@ tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario t
    <button class="small f" data-f="Proveedor">Proveedores</button>
    <button class="small f" data-f="Propietario">Propietarios</button>
    <button class="small f" data-f="Nana">Nanas</button>
+   <button class="small f" data-f="Trabajador">Trabajadores</button>
   </div>
   <div class="bar np">
    <button class="small" id="hoy">Hoy</button>
@@ -128,6 +140,12 @@ tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario t
   </div>
  </div>
 </div>
+<div class="modal" id="md"><div class="mbox">
+ <h2 id="mt">Corregir hora</h2>
+ <input type="time" id="mi">
+ <div class="two"><button class="small" id="mc">Cancelar</button><button class="small ok" id="mg">Guardar</button></div>
+ <button class="small" id="mq" style="display:none;width:100%;margin-top:8px;color:var(--dn)">Quitar salida (volver a «dentro»)</button>
+</div></div>
 <div class="toast" id="ts"></div>
 
 <script>
@@ -151,7 +169,14 @@ tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario t
   $("dt").textContent=d.toLocaleDateString("es",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
 
  function setTipo(t){tipo=t;Array.prototype.forEach.call($("types").children,function(b){b.className=b.getAttribute("data-t")===t?"on":""});
-  $("lemp").textContent=t==="Propietario"?"Apto / Casa":"Empresa";$("wemp").style.display=t==="Nana"?"none":"";$("wdep").style.display=t==="Propietario"?"none":"";save(DKEY,{tipo:t})}
+  $("lemp").textContent=t==="Propietario"?"Apto / Casa":t==="Trabajador"?"Apto / Lugar de trabajo":"Empresa";$("wemp").style.display=t==="Nana"?"none":"";$("wdep").style.display=(t==="Propietario"||t==="Trabajador")?"none":"";save(DKEY,{tipo:t});refreshSug()}
+ function lbl(t){return t==="Trabajador"?"Trabajador/a":t}
+ function refreshSug(){var seen={},h="";for(var i=data.length-1;i>=0;i--){var r=data[i];if(r.tipo!==tipo)continue;var k=r.nombre.toLowerCase();if(seen[k])continue;seen[k]=1;h+='<option value="'+esc(r.nombre)+'">'}$("sug").innerHTML=h}
+ function autofill(){var n=$("nombre").value.trim().toLowerCase();if(!n)return;
+  for(var i=data.length-1;i>=0;i--){var r=data[i];if(r.tipo===tipo&&r.nombre.toLowerCase()===n){
+   if(!$("doc").value&&r.doc)$("doc").value=r.doc;if(!$("emp").value&&r.emp)$("emp").value=r.emp;if(!$("dep").value&&r.dep)$("dep").value=r.dep;return}}}
+ $("nombre").addEventListener("input",function(e){if(e.inputType&&e.inputType!=="insertReplacementText")return;autofill()});
+ $("nombre").addEventListener("change",autofill);
 
  function dentro(){return data.filter(function(r){return!r.hs&&r.tipo!=="Propietario"})}
  function registrar(t,n,e,dc,dp){
@@ -187,13 +212,39 @@ tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario t
  $("types").onclick=function(e){var t=e.target.getAttribute("data-t");if(t)setTipo(t)};
 
  $("dentro").onclick=function(e){
+  var ed0=e.target.getAttribute("data-edit");if(ed0){abrir(ed0);return}
   var id=e.target.getAttribute("data-out");if(!id)return;
   data.forEach(function(r){if(r.id===id){r.hs=hora();toast("Salida registrada: "+r.nombre+" · "+fmtH(r.hs))}});
   save(KEY,data);render();
  };
  $("tb").onclick=function(e){
+  var ed0=e.target.getAttribute("data-edit");if(ed0){abrir(ed0);return}
   var id=e.target.getAttribute("data-del");
   if(id&&confirm("¿Eliminar este registro?")){data=data.filter(function(r){return r.id!==id});save(KEY,data);render()}
+ };
+
+ var ed=null;
+ function abrir(k){var a=k.split(":"),r=data.filter(function(x){return x.id===a[0]})[0];if(!r)return;
+  ed={r:r,c:a[1]};
+  $("mt").textContent=(a[1]==="he"?"Hora de ingreso":"Hora de salida")+" · "+r.nombre;
+  $("mi").value=r[a[1]]||hora();
+  $("mq").style.display=(a[1]==="hs"&&r.hs&&r.tipo!=="Propietario")?"":"none";
+  $("md").className="modal s";
+ }
+ function cerrar(){$("md").className="modal";ed=null}
+ $("mc").onclick=cerrar;
+ $("md").onclick=function(e){if(e.target===this)cerrar()};
+ $("mg").onclick=function(){
+  if(!ed)return;var v=$("mi").value;if(!v){toast("Elige una hora");return}
+  var r=ed.r;
+  if(ed.c==="hs"&&r.he&&v<r.he&&!confirm("La salida queda antes del ingreso. ¿Guardar igual?"))return;
+  if(ed.c==="he"&&r.hs&&v>r.hs&&!confirm("El ingreso queda después de la salida. ¿Guardar igual?"))return;
+  r[ed.c]=v;save(KEY,data);cerrar();render();toast("Hora corregida: "+r.nombre+" · "+fmtH(v));
+ };
+ $("mq").onclick=function(){
+  if(!ed)return;var r=ed.r;
+  if(!r.he){toast("Este registro no tiene ingreso: corrige esa hora o elimínalo");return}
+  r.hs="";save(KEY,data);cerrar();render();toast("Salida quitada: "+r.nombre+" está dentro otra vez");
  };
 
  document.querySelector(".bar").onclick=function(e){var f=e.target.getAttribute("data-f");if(!f)return;ft=f;
@@ -215,16 +266,17 @@ tr.t-Proveedor td:first-child{border-left:5px solid var(--b1)}tr.t-Propietario t
   var d=dentro(),h="";
   $("nin").textContent=d.length;
   d.forEach(function(r){
-   h+="<div class='in t-"+esc(r.tipo)+"'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(r.tipo)+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+(r.dep?"Depto. "+esc(r.dep)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+"</small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
+   h+="<div class='in t-"+esc(r.tipo)+"'><div><b>"+esc(r.nombre)+"</b> <span class='tag'>"+esc(lbl(r.tipo))+"</span><small>"+(r.doc?"Doc. "+esc(r.doc)+" · ":"")+(r.emp?esc(r.emp)+" · ":"")+(r.dep?"Depto. "+esc(r.dep)+" · ":"")+"Entró "+(r.fecha===hoy()?"":fmtF(r.fecha)+" ")+fmtH(r.he)+" <button class='pen' data-edit='"+r.id+":he' title='Corregir hora de ingreso' aria-label='Corregir hora de ingreso'>✎</button></small></div><button class='out' data-out='"+r.id+"'>SALIDA</button></div>";
   });
   $("dentro").innerHTML=h||"<div class='empty'>Nadie dentro en este momento</div>";
 
   var rows=filtrados(),t="";
   rows.forEach(function(r,i){
-   t+="<tr class='t-"+esc(r.tipo)+"'><td>"+(i+1)+"</td><td>"+esc(r.tipo)+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+esc(r.dep)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+(r.he?fmtH(r.he):"—")+"</td><td>"+(r.hs?fmtH(r.hs):(r.tipo==="Propietario"?"No aplica":"—"))+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
+   t+="<tr class='t-"+esc(r.tipo)+"'><td>"+(i+1)+"</td><td>"+esc(lbl(r.tipo))+"</td><td>"+esc(r.nombre)+"</td><td>"+esc(r.doc)+"</td><td>"+esc(r.emp)+"</td><td>"+esc(r.dep)+"</td><td>"+fmtF(r.fecha)+"</td><td>"+(r.he?fmtH(r.he):"—")+" <button class='pen act' data-edit='"+r.id+":he' title='Corregir hora de ingreso' aria-label='Corregir hora de ingreso'>✎</button></td><td>"+(r.hs?fmtH(r.hs):(r.tipo==="Propietario"?"No aplica":"—"))+(r.hs||r.tipo!=="Propietario"?" <button class='pen act' data-edit='"+r.id+":hs' title='Corregir hora de salida' aria-label='Corregir hora de salida'>✎</button>":"")+"</td><td class='act'><button class='small' data-del='"+r.id+"' style='color:var(--dn)'>Eliminar</button></td></tr>";
   });
+  refreshSug();
   $("tb").innerHTML=t||"<tr><td colspan='10' class='empty'>Sin registros</td></tr>";
-  $("pinfo").textContent="Tipo: "+ft+" · Fecha: "+(fd?fmtF(fd):"todas")+" · Total: "+rows.length+" · Impreso: "+new Date().toLocaleString("es");
+  $("pinfo").textContent="Tipo: "+lbl(ft)+" · Fecha: "+(fd?fmtF(fd):"todas")+" · Total: "+rows.length+" · Impreso: "+new Date().toLocaleString("es");
  }
 
  data=load(KEY,[]);
